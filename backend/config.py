@@ -23,6 +23,7 @@ class TrelloConfig:
     api_key: str
     token: str
     list_id: str
+    list_id_done: str
     base_url: str = "https://api.trello.com/1"
     timeout: float = 15.0
 
@@ -58,6 +59,7 @@ def get_trello_config() -> TrelloConfig:
         api_key=os.environ.get("TRELLO_API_KEY", ""),
         token=os.environ.get("TRELLO_TOKEN", ""),
         list_id=os.environ.get("TRELLO_LIST_ID", ""),
+        list_id_done=os.environ.get("TRELLO_LIST_ID_DONE", ""),
     )
 
 

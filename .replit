@@ -81,3 +81,4 @@ ensurePreviewReachable = "/status"
 
 [userenv.shared]
 TRELLO_LIST_ID = "6991e2238d37c975b81bfe7f"
+TRELLO_LIST_ID_DONE = "6991e2238d37c975b81bfe81"

@@ -13,6 +13,7 @@ async def create_trello_ticket(
     title: str,
     description: str,
     labels: Optional[list[str]] = None,
+    resolved: bool = True,
 ) -> Optional[str]:
     config = get_trello_config()
 
@@ -23,17 +24,23 @@ async def create_trello_ticket(
         )
         return _generate_local_ticket_id()
 
+    if resolved and config.list_id_done:
+        target_list = config.list_id_done
+    else:
+        target_list = config.list_id
+
     try:
         async with httpx.AsyncClient() as client:
             params = {
                 "key": config.api_key,
                 "token": config.token,
-                "idList": config.list_id,
+                "idList": target_list,
                 "name": title,
                 "desc": description,
             }
 
-            logger.info(f"Creating Trello card: '{title}' on list {config.list_id}")
+            list_label = "Done" if target_list == config.list_id_done else "To Do"
+            logger.info(f"Creating Trello card: '{title}' on list {target_list} ({list_label})")
 
             response = await client.post(
                 config.cards_url,

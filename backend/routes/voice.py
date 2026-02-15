@@ -118,6 +118,7 @@ async def process_voice(conversation_id: str, audio: UploadFile = File(...)):
                 f"Human follow-up required within 30 minutes"
             ),
             labels=["urgent"],
+            resolved=False,
         )
 
         conv_data["ticket_id"] = ticket_id

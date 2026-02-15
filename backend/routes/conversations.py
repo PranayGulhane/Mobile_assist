@@ -82,6 +82,7 @@ async def process_message(request: TextQueryRequest):
             title=f"ESCALATED: {topic_label}",
             description=ticket_desc,
             labels=["urgent", "escalated"],
+            resolved=False,
         )
         conv_data["ticket_id"] = ticket_id
         conv_data["summary"] = (
