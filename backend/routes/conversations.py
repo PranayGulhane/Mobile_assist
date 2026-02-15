@@ -188,7 +188,7 @@ def _handle_farewell(conv_data: dict) -> str:
 
 def _handle_escalation(conv_data: dict, topic: str, topic_label: str) -> str:
     conv_data["sentiment"] = "negative"
-    conv_data["status"] = "escalated"
+    conv_data["status"] = "closed"
     conv_data["escalated"] = True
     conv_data["ticket_type"] = "complaint"
     conv_data["resolution_status"] = "human_followup_required"

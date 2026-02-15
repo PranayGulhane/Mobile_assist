@@ -130,6 +130,6 @@ def get_knowledge_response(topic: str) -> str:
 
 ESCALATION_RESPONSE = (
     "I understand your frustration, and I sincerely apologize for the inconvenience. "
-    "A customer care executive will connect with you within 30 minutes to resolve "
-    "this personally. Your concern has been escalated to our priority queue."
+    "I'm arranging for a customer care executive to review this and assist you. "
+    "They will connect with you within 30 minutes."
 )

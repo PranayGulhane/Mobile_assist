@@ -93,7 +93,7 @@ async def process_voice(conversation_id: str, audio: UploadFile = File(...)):
 
     if sentiment_result.sentiment == "negative":
         conv_data["sentiment"] = "negative"
-        conv_data["status"] = "escalated"
+        conv_data["status"] = "closed"
         conv_data["escalated"] = True
         conv_data["ticket_type"] = "complaint"
         conv_data["resolution_status"] = "human_followup_required"
