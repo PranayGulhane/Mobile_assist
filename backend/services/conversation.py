@@ -61,16 +61,21 @@ INFORMATIONAL_PATTERNS = {
     },
 }
 
-GOODBYE_PATTERNS = [
-    "no", "nope", "no thanks", "no thank you", "nothing", "that's all",
+GOODBYE_EXACT = {
+    "no", "nope", "nah", "bye", "goodbye", "good bye",
+    "thanks", "thank you", "thankyou", "done",
+}
+
+GOODBYE_PHRASES = [
+    "no thanks", "no thank you", "nothing", "that's all",
     "thats all", "that is all", "i'm good", "im good", "all good",
-    "bye", "goodbye", "good bye", "thank you", "thanks", "thankyou",
-    "done", "nothing else", "no more", "i'm done", "im done",
+    "nothing else", "no more", "i'm done", "im done",
     "not right now", "maybe later", "that's it", "thats it",
     "have a good day", "take care", "see you", "no questions",
     "nothing more", "all set", "we're good", "i am good",
-    "no i don't", "no i dont", "nah", "okay thanks", "ok thanks",
+    "no i don't", "no i dont", "okay thanks", "ok thanks",
     "okay bye", "ok bye", "no that's it", "no thats it",
+    "that will be all", "i think that's all", "no more questions",
 ]
 
 FAREWELL_RESPONSE = (
@@ -100,14 +105,16 @@ def classify_intent(message: str) -> tuple[str, str]:
 
 
 def _is_goodbye(message_lower: str) -> bool:
-    cleaned = message_lower.rstrip(".!?,")
+    cleaned = message_lower.rstrip(".!?,").strip()
 
-    for pattern in GOODBYE_PATTERNS:
-        if cleaned == pattern:
-            return True
+    if cleaned in GOODBYE_EXACT:
+        return True
 
-    for pattern in GOODBYE_PATTERNS:
-        if pattern in cleaned:
+    if len(cleaned.split()) > 8:
+        return False
+
+    for phrase in GOODBYE_PHRASES:
+        if phrase in cleaned:
             return True
 
     return False

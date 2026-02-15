@@ -11,12 +11,28 @@ NEGATIVE_WORDS = [
     "angry", "frustrated", "annoyed", "terrible", "horrible", "worst",
     "hate", "ridiculous", "unacceptable", "disgusting", "furious",
     "outraged", "stupid", "useless", "pathetic", "scam", "fraud",
-    "steal", "cheat", "liar", "incompetent", "never", "nothing", "waste",
+    "steal", "cheat", "liar", "incompetent", "waste", "awful",
+    "disappointed", "disappointing", "upset", "unfair", "unbelievable",
 ]
 
 STRONG_NEGATIVE_WORDS = [
     "furious", "outraged", "scam", "fraud", "steal",
     "cheat", "liar", "pathetic", "disgusting",
+]
+
+FRUSTRATION_PHRASES = [
+    "why don't you", "why can't you", "why won't you",
+    "don't want to go", "don't want to check",
+    "don't want to call", "don't want to go anywhere",
+    "i don't want to", "should have", "should already",
+    "not helpful", "not useful", "no help", "can't believe",
+    "what's the point", "what good is", "waste of time",
+    "makes no sense", "doesn't make sense", "doesn't help",
+    "why should i", "you should have", "you should know",
+    "this is not", "that's not", "what kind of",
+    "i shouldn't have to", "why do i have to",
+    "go somewhere else", "go anywhere else", "check somewhere else",
+    "not good enough", "don't have my",
 ]
 
 
@@ -25,18 +41,19 @@ def analyze_sentiment_from_text(message: str) -> SentimentResult:
 
     negative_count = sum(1 for word in NEGATIVE_WORDS if word in message_lower)
     strong_negative_count = sum(1 for word in STRONG_NEGATIVE_WORDS if word in message_lower)
+    frustration_count = sum(1 for phrase in FRUSTRATION_PHRASES if phrase in message_lower)
 
-    if strong_negative_count > 0 or negative_count >= 3:
+    if strong_negative_count > 0 or negative_count >= 3 or frustration_count >= 2:
         return SentimentResult(
             sentiment="negative",
             confidence=0.95,
             details="High dissatisfaction detected. Customer shows strong negative emotions.",
         )
-    elif negative_count >= 1:
+    elif frustration_count >= 1 or negative_count >= 1:
         return SentimentResult(
-            sentiment="mixed",
-            confidence=0.7,
-            details="Some frustration detected. Monitoring for escalation.",
+            sentiment="negative",
+            confidence=0.8,
+            details="Frustration or dissatisfaction detected in customer message.",
         )
     else:
         return SentimentResult(
