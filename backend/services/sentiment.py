@@ -136,13 +136,19 @@ async def analyze_sentiment_deepgram(audio_data: bytes) -> SentimentResult:
 
 def _extract_sentiments(result: dict) -> list[str]:
     sentiments = []
-    channels = result.get("results", {}).get("channels", [])
-    for channel in channels:
-        for alt in channel.get("alternatives", []):
-            for para in alt.get("paragraphs", {}).get("paragraphs", []):
-                for sentence in para.get("sentences", []):
-                    sent = sentence.get("sentiment", "neutral")
-                    sentiments.append(sent)
+
+    sentiment_data = result.get("results", {}).get("sentiments", {})
+    segments = sentiment_data.get("segments", [])
+    for segment in segments:
+        sent = segment.get("sentiment", "neutral")
+        sentiments.append(sent)
+
+    if not sentiments:
+        average = sentiment_data.get("average", {})
+        avg_sent = average.get("sentiment")
+        if avg_sent and avg_sent != "neutral":
+            sentiments.append(avg_sent)
+
     return sentiments
 
 

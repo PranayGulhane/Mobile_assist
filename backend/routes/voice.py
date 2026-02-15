@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File
 
 from backend.models import ConversationMessage
 from backend.services.deepgram import transcribe_audio_deepgram
-from backend.services.sentiment import analyze_sentiment_deepgram
+from backend.services.sentiment import analyze_sentiment_deepgram, analyze_sentiment_from_text
 from backend.services.trello import create_trello_ticket
 from backend.services.conversation import (
     classify_intent,
@@ -45,6 +45,18 @@ async def process_voice(conversation_id: str, audio: UploadFile = File(...)):
         return {
             "error": "Could not transcribe audio. Please try again or type your message.",
         }
+
+    if sentiment_result.sentiment == "neutral" and transcript:
+        text_sentiment = analyze_sentiment_from_text(transcript)
+        logger.info(
+            f"Text sentiment fallback: {text_sentiment.sentiment} "
+            f"(confidence={text_sentiment.confidence}, details={text_sentiment.details})"
+        )
+        if text_sentiment.sentiment == "negative":
+            sentiment_result = text_sentiment
+            sentiment_result.details = (
+                f"Text fallback (audio returned neutral): {text_sentiment.details}"
+            )
 
     now = datetime.now().isoformat()
     conv_data["messages"].append(

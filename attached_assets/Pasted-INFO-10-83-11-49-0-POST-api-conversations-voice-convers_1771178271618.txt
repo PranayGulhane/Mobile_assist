@@ -1,0 +1,11 @@
+INFO:     10.83.11.49:0 - "POST /api/conversations/voice?conversation_id=conv-20260215175638741909 HTTP/1.1" 200 OK
+2026-02-15 17:57:13,887 [backend.routes.voice] INFO: Received audio: 171278 bytes, content_type=audio/webm
+2026-02-15 17:57:13,895 [backend.services.sentiment] INFO: Calling Deepgram Audio Intelligence API for sentiment analysis: audio_size=171278 bytes, url=https://api.deepgram.com/v1/listen?sentiment=true&language=en
+2026-02-15 17:57:14,427 [httpx] INFO: HTTP Request: POST https://api.deepgram.com/v1/listen?model=nova-2&language=en "HTTP/1.1 200 OK"
+2026-02-15 17:57:14,481 [httpx] INFO: HTTP Request: POST https://api.deepgram.com/v1/listen?sentiment=true&language=en "HTTP/1.1 200 OK"
+2026-02-15 17:57:14,482 [backend.services.sentiment] INFO: Deepgram Audio Intelligence sentiment segments: []
+2026-02-15 17:57:14,482 [backend.services.sentiment] INFO: No sentiment segments found in audio response
+2026-02-15 17:57:14,482 [backend.routes.voice] INFO: Transcript: 'this is really frustrating i'm completely disappointed with this response can you please give it right now here or i'll disconnect this'
+2026-02-15 17:57:14,482 [backend.routes.voice] INFO: Audio sentiment: neutral (confidence=0.6, details=No sentiment segments detected in audio)
+2026-02-15 17:57:14,490 [backend.services.trello] INFO: Creating Trello card: 'Informational: General' on list 6991e2238d37c975b81bfe81 (Done)
+2026-02-15 17:57:14,729 [httpx] INFO: HTTP Request: POST https://api.trello.com/1/cards?key=5991626bba9ecfa5342746cdb7834d2f&token=ATTAe5d9bbf834e428cf5ea702ea63eed5c5369ae52f2c82d1929394c0d7db9fc261A8876A8C&idList=6991e2238d37c975b81bfe81&name=Informational%3A+General&desc=Voice+Query+Transcript%3A+this+is+really+frustrating+i%27m+completely+disappointed+with+this+response+can+you+please+give+it+right+now+here+or+i%27ll+disconnect+this%0A%0AAudio+Sentiment%3A+NEUTRAL+%28confidence%3A+60%25%29%0AAnalysis%3A+No+sentiment+segments+detected+in+audio%0AQuery+Type%3A+INFORMATIONAL%0ATopic%3A+General%0AResolution%3A+AI+Resolved "HTTP/1.1 200 OK"
