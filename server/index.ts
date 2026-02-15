@@ -3,9 +3,33 @@ import type { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import * as fs from "fs";
 import * as path from "path";
+import { spawn } from "child_process";
 
 const app = express();
 const log = console.log;
+
+function startFastAPI() {
+  log("Starting FastAPI backend on port 8001...");
+  const pythonProcess = spawn("python", ["backend/main.py"], {
+    stdio: "inherit",
+    env: { ...process.env },
+  });
+
+  pythonProcess.on("error", (err) => {
+    console.error("Failed to start FastAPI:", err);
+  });
+
+  pythonProcess.on("exit", (code) => {
+    if (code !== 0) {
+      log(`FastAPI exited with code ${code}, restarting in 3s...`);
+      setTimeout(startFastAPI, 3000);
+    }
+  });
+
+  return pythonProcess;
+}
+
+startFastAPI();
 
 declare module "http" {
   interface IncomingMessage {
@@ -227,12 +251,13 @@ function setupErrorHandler(app: express.Application) {
 
 (async () => {
   setupCors(app);
+
+  const server = await registerRoutes(app);
+
   setupBodyParsing(app);
   setupRequestLogging(app);
 
   configureExpoAndLanding(app);
-
-  const server = await registerRoutes(app);
 
   setupErrorHandler(app);
 
