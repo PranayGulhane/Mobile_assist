@@ -1,7 +1,11 @@
+import logging
+
 import httpx
 
 from backend.config import get_deepgram_config
 from backend.models import SentimentResult
+
+logger = logging.getLogger(__name__)
 
 NEGATIVE_WORDS = [
     "angry", "frustrated", "annoyed", "terrible", "horrible", "worst",
@@ -46,6 +50,7 @@ async def analyze_sentiment_deepgram(audio_data: bytes) -> SentimentResult:
     config = get_deepgram_config()
 
     if not config.is_configured:
+        logger.warning("Deepgram API key not configured - audio sentiment analysis unavailable")
         return SentimentResult(
             sentiment="neutral",
             confidence=0.5,
@@ -53,9 +58,15 @@ async def analyze_sentiment_deepgram(audio_data: bytes) -> SentimentResult:
         )
 
     try:
+        url = f"{config.listen_url}?sentiment=true&language=en"
+        logger.info(
+            f"Calling Deepgram Audio Intelligence API for sentiment analysis: "
+            f"audio_size={len(audio_data)} bytes, url={url}"
+        )
+
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                f"{config.listen_url}?sentiment=true&language=en",
+                url,
                 headers={
                     "Authorization": f"Token {config.api_key}",
                     "Content-Type": "audio/wav",
@@ -65,6 +76,10 @@ async def analyze_sentiment_deepgram(audio_data: bytes) -> SentimentResult:
             )
 
             if response.status_code != 200:
+                logger.error(
+                    f"Deepgram Audio Intelligence API error: "
+                    f"status={response.status_code}, body={response.text[:500]}"
+                )
                 return SentimentResult(
                     sentiment="neutral",
                     confidence=0.5,
@@ -74,16 +89,27 @@ async def analyze_sentiment_deepgram(audio_data: bytes) -> SentimentResult:
             result = response.json()
             sentiments = _extract_sentiments(result)
 
+            logger.info(
+                f"Deepgram Audio Intelligence sentiment segments: {sentiments}"
+            )
+
             if not sentiments:
+                logger.info("No sentiment segments found in audio response")
                 return SentimentResult(
                     sentiment="neutral",
                     confidence=0.6,
-                    details="Mixed or neutral sentiment detected",
+                    details="No sentiment segments detected in audio",
                 )
 
-            return _aggregate_sentiments(sentiments)
+            aggregated = _aggregate_sentiments(sentiments)
+            logger.info(
+                f"Aggregated audio sentiment: {aggregated.sentiment} "
+                f"(confidence={aggregated.confidence:.0%})"
+            )
+            return aggregated
 
     except Exception as e:
+        logger.error(f"Deepgram Audio Intelligence sentiment error: {e}")
         return SentimentResult(
             sentiment="neutral",
             confidence=0.5,
@@ -98,7 +124,8 @@ def _extract_sentiments(result: dict) -> list[str]:
         for alt in channel.get("alternatives", []):
             for para in alt.get("paragraphs", {}).get("paragraphs", []):
                 for sentence in para.get("sentences", []):
-                    sentiments.append(sentence.get("sentiment", "neutral"))
+                    sent = sentence.get("sentiment", "neutral")
+                    sentiments.append(sent)
     return sentiments
 
 
@@ -111,17 +138,17 @@ def _aggregate_sentiments(sentiments: list[str]) -> SentimentResult:
         return SentimentResult(
             sentiment="negative",
             confidence=neg_count / total,
-            details=f"Detected negative sentiment in {neg_count}/{total} segments",
+            details=f"Deepgram Audio Intelligence: negative sentiment in {neg_count}/{total} segments",
         )
     elif pos_count / total > 0.5:
         return SentimentResult(
             sentiment="positive",
             confidence=pos_count / total,
-            details=f"Detected positive sentiment in {pos_count}/{total} segments",
+            details=f"Deepgram Audio Intelligence: positive sentiment in {pos_count}/{total} segments",
         )
 
     return SentimentResult(
         sentiment="neutral",
         confidence=0.6,
-        details="Mixed or neutral sentiment detected",
+        details=f"Deepgram Audio Intelligence: mixed/neutral sentiment ({neg_count} neg, {pos_count} pos out of {total} segments)",
     )

@@ -61,9 +61,30 @@ INFORMATIONAL_PATTERNS = {
     },
 }
 
+GOODBYE_PATTERNS = [
+    "no", "nope", "no thanks", "no thank you", "nothing", "that's all",
+    "thats all", "that is all", "i'm good", "im good", "all good",
+    "bye", "goodbye", "good bye", "thank you", "thanks", "thankyou",
+    "done", "nothing else", "no more", "i'm done", "im done",
+    "not right now", "maybe later", "that's it", "thats it",
+    "have a good day", "take care", "see you", "no questions",
+    "nothing more", "all set", "we're good", "i am good",
+    "no i don't", "no i dont", "nah", "okay thanks", "ok thanks",
+    "okay bye", "ok bye", "no that's it", "no thats it",
+]
+
+FAREWELL_RESPONSE = (
+    "It was great helping you today! If you ever have more questions "
+    "about your credit card, don't hesitate to reach out. "
+    "Have a wonderful day. Goodbye!"
+)
+
 
 def classify_intent(message: str) -> tuple[str, str]:
-    message_lower = message.lower()
+    message_lower = message.lower().strip()
+
+    if _is_goodbye(message_lower):
+        return "farewell", "farewell"
 
     for topic, keywords in COMPLAINT_PATTERNS.items():
         if any(kw in message_lower for kw in keywords):
@@ -75,13 +96,28 @@ def classify_intent(message: str) -> tuple[str, str]:
         if required_match and any_match:
             return "informational", topic
 
-    return "informational", "bill_generation"
+    return "informational", "general"
+
+
+def _is_goodbye(message_lower: str) -> bool:
+    cleaned = message_lower.rstrip(".!?,")
+
+    for pattern in GOODBYE_PATTERNS:
+        if cleaned == pattern:
+            return True
+
+    for pattern in GOODBYE_PATTERNS:
+        if pattern in cleaned:
+            return True
+
+    return False
 
 
 def get_knowledge_response(topic: str) -> str:
     return CREDIT_CARD_KNOWLEDGE.get(
         topic,
-        "I'd be happy to help you with that. Could you provide more details about your query?",
+        "I'd be happy to help you with that. Could you provide more details "
+        "about your credit card query so I can assist you better?",
     )
 
 

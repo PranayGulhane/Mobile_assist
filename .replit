@@ -76,3 +76,8 @@ task = "shell.exec"
 args = "npm run expo:dev"
 waitForPort = 8081
 ensurePreviewReachable = "/status"
+
+[userenv]
+
+[userenv.shared]
+TRELLO_LIST_ID = "6991e2238d37c975b81bfe7f"

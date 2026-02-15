@@ -14,6 +14,7 @@ from backend.services.conversation import (
     classify_intent,
     get_knowledge_response,
     ESCALATION_RESPONSE,
+    FAREWELL_RESPONSE,
 )
 from backend.store import conversations_store
 
@@ -68,7 +69,20 @@ async def process_message(request: TextQueryRequest):
     query_type, topic = classify_intent(request.message)
     topic_label = topic.replace("_", " ").title()
 
-    if sentiment_result.sentiment == "negative":
+    if query_type == "farewell":
+        response_text = _handle_farewell(conv_data)
+        ticket_desc = (
+            f"Session completed normally.\n"
+            f"Messages: {len(conv_data['messages'])}\n"
+            f"Sentiment: {sentiment_result.sentiment.upper()}\n"
+            f"Resolution: Customer ended conversation - AI Resolved"
+        )
+        ticket_id = await create_trello_ticket(
+            title=f"Resolved: {conv_data.get('title', 'Support Session')}",
+            description=ticket_desc,
+        )
+        conv_data["ticket_id"] = ticket_id
+    elif sentiment_result.sentiment == "negative":
         response_text = _handle_escalation(conv_data, topic, topic_label)
         ticket_desc = (
             f"Customer Query: {request.message}\n\n"
@@ -151,6 +165,24 @@ async def get_conversation(conversation_id: str):
     if not conv_data:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return conv_data
+
+
+def _handle_farewell(conv_data: dict) -> str:
+    conv_data["status"] = "closed"
+    conv_data["resolution_status"] = "ai_resolved"
+    if conv_data.get("title") == "New Support Session":
+        conv_data["title"] = "Support Session"
+    conv_data["summary"] = "Customer ended conversation. Query resolved by AI agent."
+
+    conv_data["messages"].append(
+        ConversationMessage(
+            role="assistant",
+            content=FAREWELL_RESPONSE,
+            timestamp=datetime.now().isoformat(),
+        ).model_dump()
+    )
+
+    return FAREWELL_RESPONSE
 
 
 def _handle_escalation(conv_data: dict, topic: str, topic_label: str) -> str:
