@@ -69,20 +69,7 @@ async def process_message(request: TextQueryRequest):
     query_type, topic = classify_intent(request.message)
     topic_label = topic.replace("_", " ").title()
 
-    if query_type == "farewell":
-        response_text = _handle_farewell(conv_data)
-        ticket_desc = (
-            f"Session completed normally.\n"
-            f"Messages: {len(conv_data['messages'])}\n"
-            f"Sentiment: {sentiment_result.sentiment.upper()}\n"
-            f"Resolution: Customer ended conversation - AI Resolved"
-        )
-        ticket_id = await create_trello_ticket(
-            title=f"Resolved: {conv_data.get('title', 'Support Session')}",
-            description=ticket_desc,
-        )
-        conv_data["ticket_id"] = ticket_id
-    elif sentiment_result.sentiment == "negative":
+    if sentiment_result.sentiment == "negative":
         response_text = _handle_escalation(conv_data, topic, topic_label)
         ticket_desc = (
             f"Customer Query: {request.message}\n\n"
@@ -101,6 +88,19 @@ async def process_message(request: TextQueryRequest):
             f"Customer reported {topic.replace('_', ' ')} and showed dissatisfaction. "
             f"Escalated to human agent."
         )
+    elif query_type == "farewell":
+        response_text = _handle_farewell(conv_data)
+        ticket_desc = (
+            f"Session completed normally.\n"
+            f"Messages: {len(conv_data['messages'])}\n"
+            f"Sentiment: {sentiment_result.sentiment.upper()}\n"
+            f"Resolution: Customer ended conversation - AI Resolved"
+        )
+        ticket_id = await create_trello_ticket(
+            title=f"Resolved: {conv_data.get('title', 'Support Session')}",
+            description=ticket_desc,
+        )
+        conv_data["ticket_id"] = ticket_id
     else:
         response_text = _handle_resolved(conv_data, sentiment_result, query_type, topic, topic_label)
         ticket_desc = (
