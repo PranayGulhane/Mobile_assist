@@ -273,6 +273,7 @@ export default function ConversationScreen() {
   const [conversationStatus, setConversationStatus] = useState("active");
   const [isEscalated, setIsEscalated] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
 
@@ -293,6 +294,7 @@ export default function ConversationScreen() {
       setIsEscalated(data.escalated || false);
     } catch (e) {
       console.log("Error loading conversation");
+      setLoadError(true);
     } finally {
       setIsLoading(false);
     }
@@ -492,6 +494,31 @@ export default function ConversationScreen() {
       <View style={[styles.container, styles.centered, { backgroundColor: theme.background }]}>
         <StatusBar style={isDark ? "light" : "dark"} />
         <ActivityIndicator color={theme.tint} size="large" />
+      </View>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <View style={[styles.container, styles.centered, { backgroundColor: theme.background }]}>
+        <StatusBar style={isDark ? "light" : "dark"} />
+        <Feather name="alert-circle" size={48} color={theme.textSecondary} />
+        <Text style={[styles.errorTitle, { color: theme.text, fontFamily: "Inter_600SemiBold" }]}>
+          Session Expired
+        </Text>
+        <Text style={[styles.errorSubtitle, { color: theme.textSecondary, fontFamily: "Inter_400Regular" }]}>
+          This conversation is no longer available.
+        </Text>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.errorButton, { opacity: pressed ? 0.8 : 1 }]}
+        >
+          <LinearGradient colors={["#0A84FF", "#30D5C8"]} style={styles.errorButtonGradient}>
+            <Text style={[styles.errorButtonText, { fontFamily: "Inter_600SemiBold" }]}>
+              Go Back
+            </Text>
+          </LinearGradient>
+        </Pressable>
       </View>
     );
   }
@@ -958,5 +985,29 @@ const styles = StyleSheet.create({
   },
   backHomeText: {
     fontSize: 15,
+  },
+  errorTitle: {
+    fontSize: 20,
+    marginTop: 16,
+  },
+  errorSubtitle: {
+    fontSize: 14,
+    marginTop: 4,
+    textAlign: "center" as const,
+    paddingHorizontal: 40,
+  },
+  errorButton: {
+    marginTop: 24,
+    borderRadius: 14,
+    overflow: "hidden" as const,
+  },
+  errorButtonGradient: {
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 14,
+  },
+  errorButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
