@@ -66,7 +66,8 @@ Preferred communication style: Simple, everyday language.
 
 ### Trello API
 - **Purpose**: Mandatory ticket creation for support cases (especially escalated/complaint conversations)
-- **Config**: `TRELLO_API_KEY`, `TRELLO_TOKEN`, `TRELLO_LIST_ID` environment variables
+- **Config**: `TRELLO_API_KEY`, `TRELLO_TOKEN`, `TRELLO_LIST_ID` (To Do list), `TRELLO_LIST_ID_DONE` (Done list) environment variables
+- **Routing**: Resolved/AI-handled tickets → Done list; Escalated/unresolved tickets → To Do list
 - **Endpoint Used**: `POST /1/cards` to create cards
 - **Fallback**: Generates local ticket IDs (`LOCAL-{timestamp}`) if Trello is not configured
 
