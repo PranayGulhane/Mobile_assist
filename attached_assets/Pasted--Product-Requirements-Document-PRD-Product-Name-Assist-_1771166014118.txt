@@ -1,0 +1,262 @@
+---
+
+# 📄 Product Requirements Document (PRD)
+
+## Product Name
+
+Assist Link 
+Short decription - Intelligant Voice Support Mobile Agent for Credit Card Queries
+
+---
+
+# 🎯 Product Objective
+
+Provide users with a mobile-based conversational voice support agent that:
+
+✔ Attempts to resolve credit card queries using **Deepgram’s Standard Voice Agent API**
+✔ Continuously monitors emotional state using **Deepgram’s Audio Intelligence Sentiment Analysis API**
+✔ Detects dissatisfaction in real-time
+✔ Softly stops failed conversations
+✔ Ensures human follow-up when needed
+✔ Mandatorily creates a ticket in Trello (or similar free work-tracking app) using Function Calling
+
+---
+
+# 📱 Interaction Mode
+
+Users do not place calls.
+
+Instead:
+
+User opens mobile app → taps “Talk to Support” → speaks directly to AI agent.
+
+---
+
+# 👤 Primary Use Cases
+
+## Informational Queries
+
+Users ask:
+
+* When will my credit card bill be generated?
+* When will payment be deducted?
+* What is my outstanding balance?
+* When is my due date?
+
+---
+
+## Complaint Queries
+
+Users report:
+
+* Amount deducted twice
+* Incorrect billing
+* Unauthorized charge
+* Missing refund
+
+---
+
+# 🧩 Core Product Features
+
+---
+
+## 1. Voice Interaction via Deepgram Standard Voice Agent API
+
+The mobile app must use:
+
+👉 **Deepgram Standard Voice Agent API**
+
+to:
+
+✔ Listen to user speech
+✔ Understand intent
+✔ Respond conversationally
+✔ Handle multi-turn interactions
+
+This API drives the primary conversation experience.
+
+---
+
+## 2. Parallel Sentiment Monitoring via Deepgram Audio Intelligence API
+
+While conversation is happening:
+
+👉 **Deepgram Audio Intelligence Sentiment Analysis API** must run in parallel.
+
+It continuously analyzes:
+
+* Tone
+* Emotional stress
+* Frustration signals
+* Dissatisfaction
+
+---
+
+## 3. Dissatisfaction Detection
+
+Sentiment analysis must detect:
+
+* Anger
+* Irritation
+* Repeated confusion
+* Negative conversational sentiment
+
+This detection happens in real time.
+
+---
+
+## 4. Soft Conversation Stop
+
+If dissatisfaction is detected:
+
+The Voice Agent must stop the conversation gently.
+
+It must respond with:
+
+“A customer care executive will connect with you within 30 minutes.”
+
+Conversation should not end abruptly.
+
+---
+
+## 5. Mandatory Ticket Creation via Function Calling
+
+In ALL cases, whether:
+
+✔ Query resolved by AI
+OR
+✔ Customer dissatisfied
+
+The Voice Agent must trigger an external action using Function Calling.
+
+---
+
+## 6. External Ticket Creation
+
+The external action must create a ticket in:
+
+👉 Trello (preferred free tool)
+OR
+👉 Any similar free work-tracking platform
+
+---
+
+## 7. Ticket Must Contain
+
+The created ticket must include:
+
+* Title (based on user issue)
+* Dummy contact details
+* Description of user query
+
+---
+
+## 8. Ticket Creation Scenarios
+
+### A. AI Successfully Resolves Query
+
+Ticket Type: Informational
+
+Example:
+
+Title: Bill Generation Query
+Description: User asked about monthly bill generation timeline.
+
+---
+
+### B. Dissatisfied User Escalated
+
+Ticket Type: Complaint
+
+Example:
+
+Title: Possible Double Deduction
+Description: User reported duplicate charge and showed dissatisfaction during AI interaction.
+
+---
+
+## 9. Emotional Context Tagging
+
+Ticket must also reflect:
+
+* Whether dissatisfaction was detected
+* Whether escalation was triggered
+
+---
+
+## 10. Human Follow-Up Trigger
+
+If dissatisfaction is detected:
+
+Ticket should indicate:
+
+Human follow-up required within 30 minutes.
+
+---
+
+## 11. Resolution Status Tagging
+
+Each ticket marked as:
+
+* AI Resolved
+* Human Follow-Up Required
+
+---
+
+## 12. Interaction Summary
+
+Agent generates:
+
+* Issue summary
+* Resolution attempt
+* Emotional state outcome
+
+---
+
+## 13. Complaint Sensitivity Handling
+
+Complaint queries must have:
+
+Lower tolerance for dissatisfaction signals.
+
+Escalation should occur faster.
+
+---
+
+## 14. Conversation Closure
+
+If AI resolves:
+
+Agent confirms:
+
+“Is there anything else I can help you with?”
+
+Ticket creation still mandatory.
+
+---
+
+# 🔁 Feature Flow
+
+User speaks →
+Deepgram Voice Agent responds →
+Deepgram Sentiment Analysis monitors →
+
+Function Call creates ticket →
+
+If satisfied → Close
+
+If dissatisfied →
+Soft stop →
+Human follow-up promised →
+Ticket flagged
+
+---
+
+Value Delivered
+
+* Ensures AI does not continue failing conversations
+* Detects dissatisfaction early
+* Converts every interaction into actionable support
+* Guarantees operational visibility via ticketing
+
+---
