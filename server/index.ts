@@ -10,7 +10,7 @@ const log = console.log;
 
 function startFastAPI() {
   log("Starting FastAPI backend on port 8001...");
-  const pythonProcess = spawn("python", ["backend/main.py"], {
+  const pythonProcess = spawn("python", ["-m", "backend.main"], {
     stdio: "inherit",
     env: { ...process.env },
   });
