@@ -1,9 +1,15 @@
 import type { Express } from "express";
 import { createServer, type Server } from "node:http";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  app.use(
+    "/api",
+    createProxyMiddleware({
+      target: "http://127.0.0.1:8001",
+      changeOrigin: true,
+    }),
+  );
 
   const httpServer = createServer(app);
 
