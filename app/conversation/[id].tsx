@@ -635,28 +635,32 @@ export default function ConversationScreen() {
               </View>
             ) : (
               <View style={styles.voiceInputBar}>
-                <Pressable
-                  onPress={() => setShowTextInput(true)}
-                  style={({ pressed }) => [styles.switchModeBtn, { opacity: pressed ? 0.6 : 1 }]}
-                >
-                  <Feather name="type" size={20} color={theme.textSecondary} />
-                </Pressable>
-
-                <Pressable
-                  onPress={startRecording}
-                  disabled={isSending}
-                  style={({ pressed }) => [
-                    styles.micButton,
-                    { opacity: isSending ? 0.4 : pressed ? 0.8 : 1 },
-                  ]}
-                >
-                  <LinearGradient
-                    colors={["#0A84FF", "#30D5C8"]}
-                    style={styles.micGradient}
+                <View style={styles.voiceRow}>
+                  <Pressable
+                    onPress={() => setShowTextInput(true)}
+                    style={({ pressed }) => [styles.switchModeBtn, { opacity: pressed ? 0.6 : 1 }]}
                   >
-                    <Ionicons name="mic" size={28} color="#fff" />
-                  </LinearGradient>
-                </Pressable>
+                    <Feather name="type" size={20} color={theme.textSecondary} />
+                  </Pressable>
+
+                  <Pressable
+                    onPress={startRecording}
+                    disabled={isSending}
+                    style={({ pressed }) => [
+                      styles.micButton,
+                      { opacity: isSending ? 0.4 : pressed ? 0.8 : 1 },
+                    ]}
+                  >
+                    <LinearGradient
+                      colors={["#0A84FF", "#30D5C8"]}
+                      style={styles.micGradient}
+                    >
+                      <Ionicons name="mic" size={28} color="#fff" />
+                    </LinearGradient>
+                  </Pressable>
+
+                  <View style={{ width: 40 }} />
+                </View>
 
                 <Text style={[styles.voiceHint, { color: theme.textSecondary, fontFamily: "Inter_400Regular" }]}>
                   {isProcessingVoice ? "Processing..." : "Tap to speak"}
@@ -823,6 +827,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 8,
   },
+  voiceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+  },
   micButton: {
     width: 64,
     height: 64,
@@ -844,14 +854,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   switchModeBtn: {
-    position: "absolute",
-    right: 20,
-    top: 4,
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 10,
   },
   recordingBar: {
     alignItems: "center",
