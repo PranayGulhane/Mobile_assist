@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
@@ -174,9 +174,11 @@ export default function HomeScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadConversations();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadConversations();
+    }, [loadConversations])
+  );
 
   const startConversation = async () => {
     setIsStarting(true);

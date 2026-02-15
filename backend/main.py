@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import get_app_settings
 from backend.routes import (
@@ -14,14 +13,6 @@ def create_app() -> FastAPI:
     settings = get_app_settings()
 
     app = FastAPI(title=settings.app_title)
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.cors_origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
 
     app.include_router(health_router)
     app.include_router(conversations_router)
